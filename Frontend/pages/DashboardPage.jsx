@@ -58,11 +58,11 @@ export default function DashboardPage() {
   const quickAccessCards = [
     {
       id: 'knowledge-test',
-      title: 'Take a Knowledge Test',
-      description: 'Test your understanding of key concepts',
+      title: 'Knowledge Tests',
+      description: 'Test your understanding with comprehensive assessments',
       icon: BookOpen,
-      color: 'bg-blue-500',
-      onClick: () => navigate('/tests')
+      color: 'blue',
+      onClick: () => navigate('/test-hub')
     },
     {
       id: 'skill-exercise',
@@ -83,25 +83,31 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Background decoration */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-32 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+        <div className="absolute -bottom-32 -left-40 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto p-4">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-8 flex justify-between items-center bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-white/20">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">
-              Welcome back, {currentUser?.name}!
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+              Welcome back, {currentUser?.name}! 👋
             </h1>
             <div className="flex items-center space-x-2 text-gray-600">
-              <Target className="w-4 h-4" />
-              <span className="text-sm">Specialization: {userPath?.fullPath}</span>
+              <Target className="w-5 h-5 text-blue-500" />
+              <span className="text-sm font-medium">Specialization: {userPath?.fullPath}</span>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-300"
           >
             <LogOut className="w-5 h-5" />
-            <span>Logout</span>
+            <span className="font-medium">Logout</span>
           </button>
         </div>
 
@@ -110,54 +116,74 @@ export default function DashboardPage() {
           {/* Left Column - Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Readiness Score Card */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-xl font-semibold text-slate-800 mb-4">Future of Work Readiness Score</h2>
-              <div className="flex items-center justify-center mb-6">
-                <div className="relative w-40 h-40">
-                  <svg className="w-40 h-40 transform -rotate-90" viewBox="0 0 144 144">
-                    {/* Background circle */}
-                    <circle
-                      cx="72"
-                      cy="72"
-                      r="60"
-                      stroke="#e5e7eb"
-                      strokeWidth="8"
-                      fill="none"
-                    />
-                    {/* Progress circle */}
-                    <circle
-                      cx="72"
-                      cy="72"
-                      r="60"
-                      stroke="#3b82f6"
-                      strokeWidth="8"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeDasharray={`${2 * Math.PI * 60}`}
-                      strokeDashoffset={`${2 * Math.PI * 60 * (1 - readinessScore / 100)}`}
-                      className="transition-all duration-1000 ease-out"
-                    />
-                  </svg>
+            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8 border border-white/20">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                  <span className="text-white text-2xl">📊</span>
+                </div>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Future of Work Readiness Score
+                </h2>
+              </div>
+              
+              <div className="flex items-center justify-center mb-8">
+                <div className="relative w-48 h-48">
+                  {/* Outer decorative circle */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 p-4">
+                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 144 144">
+                      {/* Background circle */}
+                      <circle
+                        cx="72"
+                        cy="72"
+                        r="60"
+                        stroke="#f1f5f9"
+                        strokeWidth="12"
+                        fill="none"
+                      />
+                      {/* Progress circle */}
+                      <circle
+                        cx="72"
+                        cy="72"
+                        r="60"
+                        stroke="url(#gradient)"
+                        strokeWidth="12"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeDasharray={`${2 * Math.PI * 60}`}
+                        strokeDashoffset={`${2 * Math.PI * 60 * (1 - readinessScore / 100)}`}
+                        className="transition-all duration-2000 ease-out"
+                      />
+                      <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stopColor="#3b82f6" />
+                          <stop offset="100%" stopColor="#8b5cf6" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                  </div>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-slate-800">{readinessScore}%</div>
-                      <div className="text-sm text-gray-600">Ready</div>
+                      <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        {readinessScore}%
+                      </div>
+                      <div className="text-sm text-gray-600 font-medium">Future Ready</div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <div className="text-2xl font-bold text-blue-600">{technicalScore}%</div>
-                  <div className="text-sm text-gray-600">Technical</div>
+              
+              <div className="grid grid-cols-3 gap-6">
+                <div className="text-center p-4 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200">
+                  <div className="text-3xl font-bold text-blue-600 mb-1">{technicalScore}%</div>
+                  <div className="text-sm text-blue-700 font-medium">Technical Skills</div>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold text-green-600">{softSkillsScore}%</div>
-                  <div className="text-sm text-gray-600">Soft Skills</div>
+                <div className="text-center p-4 rounded-xl bg-gradient-to-br from-green-50 to-green-100 border border-green-200">
+                  <div className="text-3xl font-bold text-green-600 mb-1">{softSkillsScore}%</div>
+                  <div className="text-sm text-green-700 font-medium">Soft Skills</div>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold text-purple-600">{leadershipScore}%</div>
-                  <div className="text-sm text-gray-600">Leadership</div>
+                <div className="text-center p-4 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200">
+                  <div className="text-3xl font-bold text-purple-600 mb-1">{leadershipScore}%</div>
+                  <div className="text-sm text-purple-700 font-medium">Leadership</div>
                 </div>
               </div>
             </div>
@@ -176,7 +202,7 @@ export default function DashboardPage() {
                 </span>
               </div>
               <button
-                onClick={() => navigate('/tests')}
+                onClick={() => navigate('/test-hub')}
                 className="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
               >
                 Start Test
@@ -211,7 +237,7 @@ export default function DashboardPage() {
               <h2 className="text-xl font-semibold text-slate-800 mb-4">Quick Navigation</h2>
               <nav className="space-y-2">
                 <button
-                  onClick={() => navigate('/tests')}
+                  onClick={() => navigate('/test-hub')}
                   className="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
                 >
                   <BookOpen className="w-5 h-5 mr-3 text-blue-500" />

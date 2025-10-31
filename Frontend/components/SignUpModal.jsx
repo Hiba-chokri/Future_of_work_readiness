@@ -54,14 +54,18 @@ export default function SignUpModal({ isOpen, onClose }) {
     }
 
     // Register user
-    const result = registerUser(formData.email, formData.password, formData.name);
-    
-    if (result.success) {
-      // Registration successful, navigate to onboarding
-      navigate('/onboarding');
-      onClose();
-    } else {
-      setError(result.error);
+    try {
+      const result = await registerUser(formData.email, formData.password, formData.name);
+      
+      if (result.success) {
+        // Registration successful, navigate to onboarding
+        navigate('/onboarding');
+        onClose();
+      } else {
+        setError(result.error);
+      }
+    } catch (error) {
+      setError('Registration failed: ' + error.message);
     }
     
     setIsLoading(false);

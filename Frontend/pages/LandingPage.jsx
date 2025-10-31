@@ -31,15 +31,19 @@ export default function LandingPage() {
     setIsLoading(true);
     setLoginError('');
 
-    const result = loginUser(loginData.email, loginData.password);
-    
-    if (result.success) {
-      // Login successful, navigate to dashboard
-      navigate('/dashboard');
-      setShowLogin(false);
-      setLoginData({ email: '', password: '' });
-    } else {
-      setLoginError(result.error);
+    try {
+      const result = await loginUser(loginData.email, loginData.password);
+      
+      if (result.success) {
+        // Login successful, navigate to dashboard
+        navigate('/dashboard');
+        setShowLogin(false);
+        setLoginData({ email: '', password: '' });
+      } else {
+        setLoginError(result.error);
+      }
+    } catch (error) {
+      setLoginError('Login failed: ' + error.message);
     }
     
     setIsLoading(false);

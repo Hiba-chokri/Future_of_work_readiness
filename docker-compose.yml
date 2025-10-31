@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: futurework_db
+    environment:
+      POSTGRES_USER: fw_user
+      POSTGRES_PASSWORD: fw_password_123
+      POSTGRES_DB: futurework
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  backend:
+    build: ./Backend
+    container_name: futurework_backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./Backend:/app
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://fw_user:fw_password_123@postgres:5432/futurework
+      SECRET_KEY: dev-secret-key-change-in-production
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

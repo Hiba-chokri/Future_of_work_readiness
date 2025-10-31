@@ -1,74 +1,75 @@
-// Authentication utilities using localStorage
+// Authentication utilities with FastAPI backend integration
+import { authAPI, testConnection } from './api.jsx';
 
-// User data structure
-const createUser = (email, name, industry = null) => ({
-  id: Date.now().toString(),
-  email,
-  name,
-  industry,
-  createdAt: new Date().toISOString(),
-  readinessScore: 0,
-  technicalScore: 0,
-  softSkillsScore: 0,
-  leadershipScore: 0,
-  completedTests: [],
-  badges: [],
-  recentActivity: []
+// User data structure (for frontend use)
+const createUser = (userData) => ({
+  ...userData,
+  readinessScore: userData.readinessScore || 0,
+  technicalScore: userData.technicalScore || 0,
+  softSkillsScore: userData.softSkillsScore || 0,
+  leadershipScore: userData.leadershipScore || 0,
+  completedTests: userData.completedTests || [],
+  badges: userData.badges || [],
+  recentActivity: userData.recentActivity || []
 });
 
 // Register a new user
-export const registerUser = (email, password, name) => {
+export const registerUser = async (email, password, name) => {
   try {
-    // Check if user already exists
-    const existingUsers = getUsers();
-    if (existingUsers.find(user => user.email === email)) {
-      throw new Error('User already exists with this email');
+    // Test API connection first
+    const connectionTest = await testConnection();
+    if (!connectionTest.success) {
+      throw new Error('Cannot connect to server. Please ensure the backend is running.');
     }
 
-    // Create new user
-    const newUser = createUser(email, name);
+    // Register user with backend
+    const userData = {
+      email,
+      password,
+      name
+    };
     
-    // Store user credentials (in real app, password would be hashed on backend)
-    const credentials = getCredentials();
-    credentials[email] = { password, userId: newUser.id };
-    localStorage.setItem('userCredentials', JSON.stringify(credentials));
+    const response = await authAPI.register(userData);
     
-    // Store user data
-    const users = [...existingUsers, newUser];
-    localStorage.setItem('users', JSON.stringify(users));
+    if (response.user) {
+      const user = createUser(response.user);
+      // Set current user in localStorage for session management
+      setCurrentUser(user);
+      return { success: true, user };
+    } else {
+      throw new Error(response.message || 'Registration failed');
+    }
     
-    // Set current user
-    setCurrentUser(newUser);
-    
-    return { success: true, user: newUser };
   } catch (error) {
+    console.error('Registration error:', error);
     return { success: false, error: error.message };
   }
 };
 
 // Login user
-export const loginUser = (email, password) => {
+export const loginUser = async (email, password) => {
   try {
-    const credentials = getCredentials();
-    const userCredential = credentials[email];
+    // Test API connection first
+    const connectionTest = await testConnection();
+    if (!connectionTest.success) {
+      throw new Error('Cannot connect to server. Please ensure the backend is running.');
+    }
+
+    // Login with backend
+    const credentials = { email, password };
+    const response = await authAPI.login(credentials);
     
-    if (!userCredential || userCredential.password !== password) {
-      throw new Error('Invalid email or password');
+    if (response.user) {
+      const user = createUser(response.user);
+      // Set current user in localStorage for session management
+      setCurrentUser(user);
+      return { success: true, user };
+    } else {
+      throw new Error(response.message || 'Login failed');
     }
     
-    // Find user data
-    const users = getUsers();
-    const user = users.find(u => u.id === userCredential.userId);
-    
-    if (!user) {
-      throw new Error('User data not found');
-    }
-    
-    // Set current user
-    setCurrentUser(user);
-    
-    return { success: true, user };
   } catch (error) {
+    console.error('Login error:', error);
     return { success: false, error: error.message };
   }
 };
@@ -98,53 +99,49 @@ export const isLoggedIn = () => {
   return getCurrentUser() !== null;
 };
 
-// Update user data
+// Update user data (fallback to localStorage for now)
 export const updateUser = (updatedUser) => {
   try {
-    const users = getUsers();
-    const userIndex = users.findIndex(u => u.id === updatedUser.id);
-    
-    if (userIndex === -1) {
-      throw new Error('User not found');
-    }
-    
-    users[userIndex] = updatedUser;
-    localStorage.setItem('users', JSON.stringify(users));
     setCurrentUser(updatedUser);
-    
     return { success: true, user: updatedUser };
   } catch (error) {
     return { success: false, error: error.message };
   }
 };
 
-// Helper functions
-const getUsers = () => {
-  try {
-    const usersStr = localStorage.getItem('users');
-    return usersStr ? JSON.parse(usersStr) : [];
-  } catch {
-    return [];
-  }
-};
-
-const getCredentials = () => {
-  try {
-    const credStr = localStorage.getItem('userCredentials');
-    return credStr ? JSON.parse(credStr) : {};
-  } catch {
-    return {};
-  }
-};
-
 // Update user's selected industry
-export const updateUserIndustry = (industry) => {
+export const updateUserIndustry = async (industry) => {
   const currentUser = getCurrentUser();
-  if (currentUser) {
-    const updatedUser = { ...currentUser, industry };
-    return updateUser(updatedUser);
+  if (!currentUser) {
+    return { success: false, error: 'No user logged in' };
   }
-  return { success: false, error: 'No user logged in' };
+  
+  try {
+    // Test API connection first
+    const connectionTest = await testConnection();
+    if (!connectionTest.success) {
+      throw new Error('Cannot connect to server. Please ensure the backend is running.');
+    }
+
+    // Update industry with backend
+    const industryData = { industry };
+    const response = await authAPI.updateIndustry(currentUser.id, industryData);
+    
+    if (response.user) {
+      const updatedUser = createUser(response.user);
+      setCurrentUser(updatedUser);
+      return { success: true, user: updatedUser };
+    } else {
+      throw new Error(response.message || 'Industry update failed');
+    }
+    
+  } catch (error) {
+    console.error('Industry update error:', error);
+    // Fallback to local update if backend fails
+    const updatedUser = { ...currentUser, industry };
+    setCurrentUser(updatedUser);
+    return { success: true, user: updatedUser, warning: 'Updated locally: ' + error.message };
+  }
 };
 
 // Update user's scores
