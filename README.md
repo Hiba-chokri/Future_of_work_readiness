@@ -289,27 +289,6 @@ curl http://localhost:8000/api/quizzes/20
 3. Complete the onboarding to select your specialization
 4. Take a quiz and view results
 
-##  AI Quiz Generation
-
-The platform uses Google Gemini 2.5 Flash API to generate high-quality quiz questions.
-
-### Features:
-- Generates questions for any specialization/topic
-- Supports multiple difficulty levels (1-5)
-- Creates detailed explanations for each answer
-- Cost-efficient: ~$0.001 per 6 questions
-
-### Usage:
-
-```python
-from app.generate_quiz import generate_quiz_question
-
-result = generate_quiz_question(
-    specialization="Frontend Development",
-    topic="React Hooks",
-    difficulty=3  # 1=Beginner, 5=Expert
-)
-```
 
 ## Troubleshooting
 
