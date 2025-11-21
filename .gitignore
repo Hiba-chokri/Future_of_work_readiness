@@ -6,7 +6,7 @@ Frontend/node_modules/
 .env
 Backend/.env
 Backend/app/.env
-
+~Backend/.env
 # Python
 __pycache__/
 *.py[cod]
