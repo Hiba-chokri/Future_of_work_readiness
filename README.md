@@ -5,7 +5,6 @@ A comprehensive career readiness assessment platform that helps users evaluate t
 ## Features
 
 - **Hierarchical Industry Structure**: Sectors → Branches → Specializations
-- **AI-Powered Quiz Generation**: Automated quiz questions using Google Gemini API
 - **Adaptive Assessments**: Multi-level difficulty quizzes for various specializations
 - **User Progress Tracking**: Track readiness scores and quiz attempts
 - **RESTful API**: FastAPI backend with full CRUD operations
@@ -46,12 +45,6 @@ Add the following content to `Backend/.env`:
 # Database Configuration
 DATABASE_URL=postgresql://fw_user:fw_password_123@localhost:5432/futurework
 
-# API Keys (Optional - only needed for generating NEW quiz questions)
-GEMINI_API_KEY=your_gemini_api_key_here
-
-# Security
-SECRET_KEY=your-secret-key-change-in-production
-```
 
 ### 3. Start the Application with Docker
 
@@ -274,7 +267,7 @@ python3 -m app.generate_quiz
 python3 -m app.replace_frontend_questions
 ```
 
-## 🧪 Testing the Application
+## Testing the Application
 
 ### Test Backend API
 
