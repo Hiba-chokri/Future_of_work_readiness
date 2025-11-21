@@ -1,6 +1,37 @@
-node_modules
-node_modules
-node_modules
-node_modules
-node_modules
-./Backend/.env
+# Dependencies
+node_modules/
+Frontend/node_modules/
+
+# Environment variables
+.env
+Backend/.env
+Backend/app/.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+*.dockerfile.swp
